@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acadexa - Curate Your Study Resources</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        form { display: flex; flex-direction: column; }
+        label { margin-top: 10px; font-weight: bold; }
+        input, select, button { padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
+        .checkbox-group label { font-weight: normal; margin: 0; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; margin-top: 20px; }
+        button:hover { background-color: #218838; }
+        .loading { display: none; text-align: center; margin-top: 20px; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .preview { display: none; margin-top: 20px; padding: 10px; border: 1px solid #ddd; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Acadexa</h1>
+        <p>Enter your grade/level and select subjects and resource types to get curated study materials tailored to your specific needs.</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form action="/results" method="post">
+            <label for="grade">Grade/Level:</label>
+            <select id="grade" name="grade" required>
+                <option value="">Select Grade/Level</option>
+                <option value="Elementary 1">Elementary Grade 1</option>
+                <option value="Elementary 2">Elementary Grade 2</option>
+                <option value="Elementary 3">Elementary Grade 3</option>
+                <option value="Elementary 4">Elementary Grade 4</option>
+                <option value="Elementary 5">Elementary Grade 5</option>
+                <option value="Middle School 6">Middle School Grade 6</option>
+                <option value="Middle School 7">Middle School Grade 7</option>
+                <option value="Middle School 8">Middle School Grade 8</option>
+                <option value="High School 9">High School Grade 9</option>
+                <option value="High School 10">High School Grade 10</option>
+                <option value="High School 11">High School Grade 11</option>
+                <option value="High School 12">High School Grade 12</option>
+                <option value="University 1">University Year 1</option>
+                <option value="University 2">University Year 2</option>
+                <option value="University 3">University Year 3</option>
+                <option value="University 4">University Year 4</option>
+            </select>
+
+            <label>Subjects:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="subjects" value="Math"> Math</label>
+                <label><input type="checkbox" name="subjects" value="Science"> Science</label>
+                <label><input type="checkbox" name="subjects" value="English"> English</label>
+                <label><input type="checkbox" name="subjects" value="History"> History</label>
+                <label><input type="checkbox" name="subjects" value="Geography"> Geography</label>
+                <label><input type="checkbox" name="subjects" value="Art"> Art</label>
+                <label><input type="checkbox" name="subjects" value="Music"> Music</label>
+                <label><input type="checkbox" name="subjects" value="Physical Education"> Physical Education</label>
+                <label><input type="checkbox" name="subjects" value="Computer Science"> Computer Science</label>
+                <label><input type="checkbox" name="subjects" value="Physics"> Physics</label>
+                <label><input type="checkbox" name="subjects" value="Chemistry"> Chemistry</label>
+                <label><input type="checkbox" name="subjects" value="Biology"> Biology</label>
+                <label><input type="checkbox" name="subjects" value="Economics"> Economics</label>
+                <label><input type="checkbox" name="subjects" value="Psychology"> Psychology</label>
+                <label><input type="checkbox" name="subjects" value="Sociology"> Sociology</label>
+                <label><input type="checkbox" name="subjects" value="Philosophy"> Philosophy</label>
+                <label><input type="checkbox" name="subjects" value="Literature"> Literature</label>
+                <label><input type="checkbox" name="subjects" value="Languages"> Languages</label>
+                <label><input type="checkbox" name="subjects" value="Engineering"> Engineering</label>
+                <label><input type="checkbox" name="subjects" value="Medicine"> Medicine</label>
+                <label><input type="checkbox" name="subjects" value="Law"> Law</label>
+                <label><input type="checkbox" name="subjects" value="Business"> Business</label>
+                <label><input type="checkbox" name="subjects" value="Other"> Other</label>
+            </div>
+
+            <label>Resource Types:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="resource_types" value="books"> Books</label>
+                <label><input type="checkbox" name="resource_types" value="videos"> Videos</label>
+                <label><input type="checkbox" name="resource_types" value="articles"> Articles</label>
+                <label><input type="checkbox" name="resource_types" value="libraries"> Open Source Libraries</label>
+            </div>
+
+            <button type="submit">Curate Resources</button>
+        </form>
+    </div>
+</body>
+</html>
