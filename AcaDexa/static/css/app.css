@@ -491,6 +491,32 @@ button:disabled {
     box-shadow: none;
 }
 
+.pill.danger {
+    background: linear-gradient(140deg, #7f1d1d 0%, #991b1b 56%, #b91c1c 100%);
+    box-shadow: 0 12px 26px rgba(127, 29, 29, 0.35);
+}
+
+.pill.danger:hover {
+    box-shadow: 0 14px 30px rgba(127, 29, 29, 0.45);
+}
+
+.folder-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.optional {
+    color: var(--muted);
+    font-size: 0.85em;
+    font-weight: 400;
+}
+
+.delete-folder-form {
+    margin-top: 12px;
+}
+
 .loader-note {
     color: var(--muted);
     font-size: 0.9rem;

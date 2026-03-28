@@ -220,4 +220,14 @@
             }
         });
     }
+
+    // Folder deletion — require confirmation before submitting
+    document.querySelectorAll(".delete-folder-form").forEach(function (form) {
+        form.addEventListener("submit", function (event) {
+            const name = form.dataset.folderName || "this folder";
+            if (!window.confirm("Delete \u201c" + name + "\u201d? This cannot be undone.")) {
+                event.preventDefault();
+            }
+        });
+    });
 })();

@@ -15,7 +15,7 @@ from sqlalchemy import event
 from search import STEM_SUBJECTS
 from utils import parse_grade, collect_resources
 from pdf_generator import generate_pdf
-from models_fixed import db, User, CachedSearch, SearchHistory, Download, Resource, ResourceRating, query_hash
+from models_fixed import db, User, CachedSearch, SearchHistory, Download, Resource, ResourceRating, query_hash, Folder
 
 load_dotenv()
 
@@ -297,6 +297,48 @@ def submit_review(token):
         db.session.commit()
 
     return jsonify({'ok': True, 'message': 'Thanks for rating Acadexa. Your feedback helps improve!'})
+
+
+@app.route('/folders')
+@login_required
+def folders():
+    user_folders = Folder.query.filter_by(user_id=current_user.id).order_by(Folder.created_at.desc()).all()
+    return render_template('folders.html', folders=user_folders)
+
+
+@app.route('/folders/create', methods=['POST'])
+@login_required
+def create_folder():
+    name = (request.form.get('name') or '').strip()
+    description = (request.form.get('description') or '').strip()
+
+    if not name:
+        flash('Folder name is required.', 'error')
+        return redirect(url_for('folders'))
+
+    if len(name) > 200:
+        flash('Folder name must be 200 characters or fewer.', 'error')
+        return redirect(url_for('folders'))
+
+    folder = Folder(user_id=current_user.id, name=name, description=description or None)
+    db.session.add(folder)
+    db.session.commit()
+    flash(f'Folder "{name}" created.', 'success')
+    return redirect(url_for('folders'))
+
+
+@app.route('/folders/<int:folder_id>/delete', methods=['POST'])
+@login_required
+def delete_folder(folder_id):
+    folder = Folder.query.get_or_404(folder_id)
+    if folder.user_id != current_user.id:
+        flash('You are not authorised to delete that folder.', 'error')
+        return redirect(url_for('folders'))
+    name = folder.name
+    db.session.delete(folder)
+    db.session.commit()
+    flash(f'Folder "{name}" deleted.', 'success')
+    return redirect(url_for('folders'))
 
 
 @app.cli.command('init-db')

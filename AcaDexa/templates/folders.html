@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Folders - Acadexa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body data-theme="heritage">
+    <main class="page">
+        <aside class="hero">
+            <div class="topbar">
+                <div class="logo-lockup">
+                    <div class="logo-stack">
+                        <div class="brand-row">
+                            <img src="{{ url_for('static', filename='img/acadexa-logo.svg') }}" alt="Acadexa logo">
+                            <p class="brand-name">Acadexa</p>
+                        </div>
+                        <p class="logo-motto">{{ brand_motto }}</p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <span>Welcome, {{ current_user.username }}!</span>
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    <a class="nav-link" href="{{ url_for('about') }}">About</a>
+                </div>
+            </div>
+            <h1>My Folders</h1>
+            <p class="intro">Organise your resources by creating named folders. Delete any folder you no longer need.</p>
+            <div class="actions" style="margin-top: 18px;">
+                <a class="pill secondary" href="{{ url_for('index') }}">Back to Search</a>
+            </div>
+        </aside>
+
+        <section class="panel">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'error' if category == 'error' else ('warning' if category == 'warning' else 'success') }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <h2 class="section-title">Create a New Folder</h2>
+            <form method="POST" action="{{ url_for('create_folder') }}" class="folder-form">
+                <div class="form-group">
+                    <label for="folderName">Folder Name <span aria-hidden="true">*</span></label>
+                    <input type="text" id="folderName" name="name" maxlength="200" required placeholder="e.g. Grade 10 Physics">
+                </div>
+                <div class="form-group">
+                    <label for="folderDesc">Description <span class="optional">(optional)</span></label>
+                    <input type="text" id="folderDesc" name="description" maxlength="500" placeholder="A short note about this folder">
+                </div>
+                <div class="actions">
+                    <button type="submit" class="pill">Create Folder</button>
+                </div>
+            </form>
+
+            <h2 class="section-title" style="margin-top: 32px;">Your Folders</h2>
+
+            {% if folders %}
+                <div class="results-grid">
+                    {% for folder in folders %}
+                        <article class="result-group">
+                            <div class="group-header">
+                                <h3 class="resource-title" style="margin:0;">{{ folder.name }}</h3>
+                                <span class="group-count">{{ folder.created_at.strftime('%d %b %Y') }}</span>
+                            </div>
+                            {% if folder.description %}
+                                <p class="resource-copy">{{ folder.description }}</p>
+                            {% endif %}
+                            <form method="POST"
+                                  action="{{ url_for('delete_folder', folder_id=folder.id) }}"
+                                  class="delete-folder-form"
+                                  data-folder-name="{{ folder.name | e }}">
+                                <button type="submit" class="pill danger">Delete</button>
+                            </form>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-text">You have no folders yet. Create one above to get started.</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

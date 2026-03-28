@@ -20,6 +20,7 @@ class User(db.Model, UserMixin):
     search_history = relationship('SearchHistory', backref='user', lazy='dynamic', cascade='all, delete-orphan')
     downloads = relationship('Download', backref='user', lazy='dynamic', cascade='all, delete-orphan')
     ratings = relationship('ResourceRating', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+    folders = relationship('Folder', backref='user', lazy='dynamic', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -200,4 +201,25 @@ def query_hash(grade, subjects, resource_types):
     """Generate SHA256 hash for cache key."""
     input_str = f"{grade}:{':'.join(sorted(subjects))}:{':'.join(sorted(resource_types))}"
     return hashlib.sha256(input_str.encode()).hexdigest()
+
+
+class Folder(db.Model):
+    """User-created folders for organising resources."""
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False, index=True)
+    name = Column(String(200), nullable=False)
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Folder id={self.id} name={self.name!r}>'
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'name': self.name,
+            'description': self.description,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+        }
 
