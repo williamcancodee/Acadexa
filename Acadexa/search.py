@@ -3,6 +3,19 @@ from youtubesearchpython import VideosSearch
 
 STEM_SUBJECTS = ['Math', 'Science', 'Computer Science', 'Physics', 'Chemistry', 'Biology', 'Engineering', 'Economics', 'Psychology', 'Sociology', 'Philosophy', 'Medicine', 'Law', 'Business']
 
+
+def merge_sources(*lists):
+    merged = []
+    seen = set()
+    for items in lists:
+        for item in items:
+            key = (item.get('link') or item.get('title') or '').strip().lower()
+            if not key or key in seen:
+                continue
+            merged.append(item)
+            seen.add(key)
+    return merged
+
 def search_books(query, limit=10):
     """
     Search for books using Open Library API.
@@ -31,6 +44,40 @@ def search_books(query, limit=10):
     except requests.RequestException as e:
         print(f"Error searching books: {e}")
         return []
+
+
+def search_google_books(query, limit=10):
+    """Search for books using Google Books API."""
+    url = f"https://www.googleapis.com/books/v1/volumes?q={query}&maxResults={limit}"
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        books = []
+        for item in data.get('items', []):
+            volume = item.get('volumeInfo', {})
+            title = volume.get('title', 'Unknown Title')
+            author = ', '.join(volume.get('authors', ['Unknown Author']))
+            description = volume.get('description', 'No description')
+            link = volume.get('infoLink', 'N/A')
+            books.append({'title': title, 'author': author, 'link': link, 'description': description})
+        return books
+    except requests.RequestException as e:
+        print(f"Error searching Google Books: {e}")
+        return []
+
+
+def search_gutenberg_links(query, limit=5):
+    """Create Project Gutenberg catalog links as additional open-source book source."""
+    items = []
+    for idx in range(limit):
+        items.append({
+            'title': f"Project Gutenberg Catalog: {query} #{idx + 1}",
+            'author': 'Various Authors',
+            'description': 'Open classic literature and educational public-domain books.',
+            'link': f"https://www.gutenberg.org/ebooks/search/?query={query.replace(' ', '+')}"
+        })
+    return items
 
 def search_videos(query, limit=5):
     """
@@ -92,6 +139,51 @@ def search_articles(query, limit=5):
         print(f"Error searching articles: {e}")
         return []
 
+
+def search_arxiv(query, limit=5):
+    """Search arXiv feed for academic papers."""
+    url = f"https://export.arxiv.org/api/query?search_query=all:{query.replace(' ', '+')}&start=0&max_results={limit}"
+    try:
+        response = requests.get(url, timeout=12)
+        response.raise_for_status()
+        xml = response.text
+        entries = xml.split('<entry>')[1:]
+        papers = []
+        for entry in entries:
+            title = 'Unknown Title'
+            summary = 'No summary available'
+            link = 'https://arxiv.org'
+            if '<title>' in entry:
+                title = entry.split('<title>', 1)[1].split('</title>', 1)[0].strip().replace('\n', ' ')
+            if '<summary>' in entry:
+                summary = entry.split('<summary>', 1)[1].split('</summary>', 1)[0].strip().replace('\n', ' ')
+            if '<id>' in entry:
+                link = entry.split('<id>', 1)[1].split('</id>', 1)[0].strip()
+            papers.append({'title': title, 'summary': summary, 'link': link})
+        return papers
+    except requests.RequestException as e:
+        print(f"Error searching arXiv: {e}")
+        return []
+
+
+def search_openalex(query, limit=5):
+    """Search OpenAlex for scholarly works."""
+    url = f"https://api.openalex.org/works?search={query}&per-page={limit}"
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        works = []
+        for item in data.get('results', []):
+            title = item.get('display_name', 'Unknown Title')
+            summary = 'Scholarly article index from OpenAlex.'
+            link = item.get('primary_location', {}).get('landing_page_url') or item.get('id', 'https://openalex.org')
+            works.append({'title': title, 'summary': summary, 'link': link})
+        return works
+    except requests.RequestException as e:
+        print(f"Error searching OpenAlex: {e}")
+        return []
+
 def search_libraries(query, limit=5):
     """
     Search for open source libraries on GitHub.
@@ -134,3 +226,15 @@ def search_pdfs(query, limit=5):
     for i in range(limit):
         pdfs.append({'title': f"Academic PDF Search for {query}", 'link': f"https://oceanofpdf.com/search?q={query.replace(' ', '+')}"})
     return pdfs
+
+
+def search_oer_commons_links(query, limit=5):
+    """Generate OER Commons search links for open educational materials."""
+    items = []
+    for idx in range(limit):
+        items.append({
+            'title': f"OER Commons Materials for {query} #{idx + 1}",
+            'description': 'Open educational resources, lesson plans, and course modules.',
+            'link': f"https://www.oercommons.org/search?f.search={query.replace(' ', '+')}"
+        })
+    return items

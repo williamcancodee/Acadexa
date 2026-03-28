@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Acadexa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body data-theme="heritage">
+    <main class="page">
+        <aside class="hero">
+            <div class="topbar">
+                <div class="logo-lockup">
+                    <div class="logo-stack">
+                        <div class="brand-row">
+                            <img src="{{ url_for('static', filename='img/acadexa-logo.svg') }}" alt="Acadexa logo">
+                            <p class="brand-name">Acadexa</p>
+                        </div>
+                        <p class="logo-motto">{{ brand_motto }}</p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <a class="nav-link" href="{{ url_for('index') }}">Back To Curator</a>
+                </div>
+            </div>
+            <h1>Open-Source Learning, Curated With Purpose</h1>
+            <p class="intro">
+                Acadexa is an open-source platform that helps students quickly discover high-quality learning materials and
+                assemble them into one clean academic pack.
+            </p>
+            <div class="stats" aria-hidden="true">
+                <div class="stat">
+                    <strong>{{ subject_count }}</strong>
+                    <span>Subjects</span>
+                </div>
+                <div class="stat">
+                    <strong>4</strong>
+                    <span>Resource Types</span>
+                </div>
+                <div class="stat">
+                    <strong>OSS</strong>
+                    <span>Community Driven</span>
+                </div>
+            </div>
+        </aside>
+
+        <section class="panel">
+            <h2 class="section-title">What Acadexa Is</h2>
+            <p class="section-subtitle">A simple mission: make study discovery faster, clearer, and more accessible.</p>
+
+            <div class="results-grid">
+                <article class="result-group">
+                    <h3 class="resource-title">Open Source By Design</h3>
+                    <p class="resource-copy">
+                        Acadexa is built as an open-source educational platform. Its code can be improved, audited,
+                        and extended by learners, educators, and developers who care about better access to study resources.
+                    </p>
+                </article>
+
+                <article class="result-group">
+                    <h3 class="resource-title">How It Helps Learners</h3>
+                    <p class="resource-copy">
+                        You select your level, subjects, and preferred resource types. Acadexa then gathers useful links from
+                        trusted online sources and compiles them into a downloadable PDF so your research starts organized.
+                    </p>
+                </article>
+
+                <article class="result-group">
+                    <h3 class="resource-title">Built For Continuous Improvement</h3>
+                    <p class="resource-copy">
+                        Because it is open source, Acadexa can grow with new subjects, better filtering, improved accessibility,
+                        and richer recommendation logic over time.
+                    </p>
+                </article>
+            </div>
+
+            <div class="actions" style="margin-top: 18px;">
+                <a class="pill" href="{{ url_for('index') }}">Start Curating</a>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

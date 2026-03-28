@@ -1,7 +1,7 @@
 """Compatibility launcher.
 
 `main_fixed.py` is the canonical application entrypoint.
-This file is kept for backward compatibility so `python main.py` still works.
+This file is kept for backward compatibility so `python main_db.py` still works.
 """
 
 import os

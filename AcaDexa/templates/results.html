@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acadexa - Preview Your Study Pack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body data-theme="heritage">
+    <main class="page">
+        <aside class="hero">
+            <div class="topbar">
+                <div class="logo-lockup">
+                    <div class="logo-stack">
+                        <div class="brand-row">
+                            <img src="{{ url_for('static', filename='img/acadexa-logo.svg') }}" alt="Acadexa logo">
+                            <p class="brand-name">Acadexa</p>
+                        </div>
+                        <p class="logo-motto">{{ brand_motto }}</p>
+                    </div>
+                </div>
+<div class="topbar-actions">
+                    {% if current_user.is_authenticated %}
+                        <span>Welcome, {{ current_user.username }}!</span>
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    {% else %}
+                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                        <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                    {% endif %}
+                    <a class="nav-link" href="{{ url_for('about') }}">About</a>
+                </div>
+            </div>
+            <h1>Your Resource Preview</h1>
+            <p class="intro">
+                Review what Acadexa found before exporting. If it looks good, download your polished PDF package in one click.
+            </p>
+            <div class="meta-list">
+                <span class="meta-chip">{{ grade }}</span>
+                <span class="meta-chip">{{ subjects|length }} Subjects</span>
+                <span class="meta-chip">{{ resource_types|length }} Resource Types</span>
+            </div>
+            <div class="actions" style="margin-top: 18px;">
+                <a class="pill" id="downloadTrigger" href="{{ url_for('download_pdf', token=token) }}">Download PDF</a>
+                <a class="pill secondary" href="{{ url_for('index') }}">Start Over</a>
+            </div>
+        </aside>
+
+        <section class="panel">
+            <h2 class="section-title">Curated Resource Set</h2>
+            <p class="section-subtitle">Grouped by source type with quick access to each link.</p>
+
+            <div class="results-grid">
+                {% for resource_type, items in resources.items() %}
+                    {% if items %}
+                        <article class="result-group">
+                            <div class="group-header">
+                                <h3 class="resource-title" style="margin:0;">{{ display_names.get(resource_type, resource_type|capitalize) }}</h3>
+                                <span class="group-count">{{ items|length }} found</span>
+                            </div>
+                            {% for item in items %}
+                                <div class="resource-item">
+                                    <h4 class="resource-title">{{ item.title }}</h4>
+                                    {% if item.author %}
+                                        <p class="resource-copy">Author: {{ item.author }}</p>
+                                    {% endif %}
+                                    {% if item.description %}
+                                        <p class="resource-copy">{{ item.description }}</p>
+                                    {% elif item.summary %}
+                                        <p class="resource-copy">{{ item.summary }}</p>
+                                    {% endif %}
+                                    <a class="resource-link" href="{{ item.link }}" target="_blank" rel="noopener noreferrer">Visit Resource</a>
+                                </div>
+                            {% endfor %}
+                        </article>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if not has_results %}
+                <p class="empty-text">No results are available for preview right now. Try selecting different inputs.</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <div class="modal-shell" id="reviewModal" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="reviewTitle">
+            <h3 id="reviewTitle" class="section-title">How Was Your PDF Pack?</h3>
+            <p class="section-subtitle">Rate your experience and help us improve Acadexa.</p>
+            <form id="reviewForm" data-token="{{ token }}">
+                <div class="rating-row" role="radiogroup" aria-label="Rate from one to five">
+                    <label class="star-option"><input type="radio" name="rating" value="1" required><span>1</span></label>
+                    <label class="star-option"><input type="radio" name="rating" value="2"><span>2</span></label>
+                    <label class="star-option"><input type="radio" name="rating" value="3"><span>3</span></label>
+                    <label class="star-option"><input type="radio" name="rating" value="4"><span>4</span></label>
+                    <label class="star-option"><input type="radio" name="rating" value="5"><span>5</span></label>
+                </div>
+                <textarea id="reviewComment" name="comment" rows="3" maxlength="500" placeholder="Optional note about what worked well or what to improve"></textarea>
+                <div class="actions">
+                    <button type="submit">Submit Review</button>
+                    <button type="button" class="pill secondary" id="closeReviewModal">Skip</button>
+                </div>
+                <p class="selection-count" id="reviewStatus"></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

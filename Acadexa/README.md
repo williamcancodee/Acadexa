@@ -1,70 +1,67 @@
-# Acadexa
+# AcaDexa 2.0 - Curated Academic Resources
 
-Acadexa is a web application that helps users curate educational resources based on their grade level, subjects, and preferred resource types. It searches various online sources to find relevant books, videos, articles, and libraries/PDFs, then compiles them into a downloadable PDF.
+Release notes: `RELEASE_NOTES_ACADEXA_2.0.md`
 
-## Features
+## Overview
+Acadexa generates tailored PDF study packs from books, videos, articles, and open-source libraries based on grade/subject selections. Now with full PostgreSQL backend for users, search history, caching, ratings, and downloads.
 
-- **Customizable Searches**: Select grade level, subjects, and resource types (books, videos, articles, libraries/PDFs).
-- **Multiple Sources**: Integrates with Open Library (books), YouTube (videos), Wikipedia (articles), GitHub (libraries for STEM subjects), and Ocean of PDF (PDFs for other subjects).
-- **PDF Generation**: Automatically generates a PDF with curated resources for easy reference.
-- **Relevance Filtering**: Filters results to ensure they match the selected subjects.
+## Entrypoint Cleanup
+- Canonical app entrypoint: `main_fixed.py`
+- Compatibility launchers retained (not deleted): `main.py`, `main_db.py`
+- Recommended local run command: `python main_fixed.py`
+- Recommended production start command: `gunicorn main_fixed:app`
 
-## Technologies Used
-
-- **Backend**: Flask (Python web framework)
-- **PDF Generation**: FPDF
-- **APIs**: Requests for HTTP calls, YouTube Search Python for videos
-- **Frontend**: HTML/CSS (simple form interface)
-- **Deployment**: Ready for Render or similar platforms
-
-## Installation
-
-1. **Clone the repository**:
+## Local Setup
+1. Copy `.env.example` to `.env`:
    ```
-   git clone <your-repo-url>
-   cd acadexa
+   DATABASE_URL=sqlite:///instance/acadexa.db
+   SECRET_KEY=your-super-secret-key
    ```
+   For PostgreSQL: `DATABASE_URL=postgresql://user:pass@localhost/acadexa`
 
-2. **Install dependencies**:
+2. Install deps:
    ```
    pip install -r requirements.txt
    ```
 
-3. **Run the app locally**:
+3. Init DB:
    ```
-   python main.py
+   flask --app main_fixed db init
+   flask --app main_fixed db migrate -m "Initial"
+   flask --app main_fixed db upgrade
    ```
-   Visit `http://127.0.0.1:5000` in your browser.
+   Or dev quick:
+   ```
+   python main_fixed.py  # Auto-creates tables
+   ```
 
-## Usage
+4. Create superuser:
+   ```
+   flask --app main_fixed create-superuser
+   ```
 
-1. Open the app in your browser.
-2. Select your grade level from the dropdown.
-3. Choose one or more subjects (e.g., Math, Science).
-4. Select resource types (books, videos, articles, libraries/PDFs).
-5. Click "Curate Resources" to generate and download the PDF.
+5. Run:
+   ```
+   python main_fixed.py
+   ```
+   Visit `http://localhost:5000`
 
-## Deployment
+## Production (Render/Heroku)
+- Set `DATABASE_URL` (PostgreSQL).
+- `Procfile`: `web: gunicorn main_fixed:app`
+- `requirements.txt` has gunicorn.
 
-The app is configured for deployment on Render:
+## Features
+- **Auth**: Register/Login/Logout.
+- **Caching**: Search results cached (24h).
+- **Persistence**: History, downloads, ratings stored.
+- **PDF Export**: Tracked with stats.
 
-1. Push the code to a GitHub repository.
-2. Sign up for Render and create a new Web Service.
-3. Connect your GitHub repo, set build command to `pip install -r requirements.txt`, and start command to `python main.py`.
-4. Deploy and get your live URL.
+## CLI
+```
+flask --app main_fixed init-db
+flask --app main_fixed create-superuser
+```
 
-## Project Structure
+DB ready! Use `python main_fixed.py` for dev (SQLite auto-init), or set PostgreSQL in .env.
 
-- `main.py`: Main Flask application with search functions and routes.
-- `templates/index.html`: HTML template for the form.
-- `requirements.txt`: Python dependencies.
-- `Procfile`: For deployment on Render.
-- `README.md`: This file.
-
-## Contributing
-
-Feel free to fork the repo and submit pull requests for improvements.
-
-## License
-
-This project is open-source. Use it as you wish.
